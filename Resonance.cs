@@ -36,8 +36,28 @@ public partial class Resonance : ResoniteMod
             __instance.RunSynchronously(() => {
                 int index = __instance.TargetDeviceIndex ?? -1;
                 
-                int sampleRate = index > 0 ? __instance.AudioSystem.AudioInputs[index].SampleRate : __instance.AudioSystem.DefaultAudioInput.SampleRate;
-                
+                //44100;
+                int sampleRate;
+
+                // Check if we're on Linux.
+                if (!Engine.Current.UseWineRenderer)
+                {
+                    sampleRate = index > 0 ? __instance.AudioSystem.AudioInputs[index].SampleRate : __instance.AudioSystem.DefaultAudioInput.SampleRate;
+                }
+                else
+                {
+                    // We need to cast AudioInput to SDLRecordingDevice to get Format.spec.Freq and set sampleRate.
+                    Resonance.Msg("AudioInput is actually SDLRecordingDevice on Linux. Casting and getting sample rate...");
+
+                    Type? audioInputType = __instance.AudioSystem.DefaultAudioInput.GetType();
+                    var selectedInput = index > 0 ? __instance.AudioSystem.AudioInputs[index] : __instance.AudioSystem.DefaultAudioInput;
+
+                    ValueTuple<SDL3.SDL.AudioSpec, int> sdlRecordingDevice_Format =
+                        (ValueTuple<SDL3.SDL.AudioSpec, int>)audioInputType.GetProperty("Format").GetValue(selectedInput);
+
+                    sampleRate =  sdlRecordingDevice_Format.Item1.Freq;
+                }
+
                 FFTStreamSettings settings =
                     new
                     (
