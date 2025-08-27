@@ -39,8 +39,9 @@ public partial class Resonance : ResoniteMod
                 //44100;
                 int sampleRate;
 
-                // Check if we're on Linux.
-                if (!Engine.Current.UseWineRenderer)
+                // Check if we're using SDL. Either non-Windows platform or ForceSDLAudio launch argument
+                Type? audioInputType = __instance.AudioSystem.DefaultAudioInput.GetType();
+                if (audioInputType.Name != "SDLRecordingDevice")
                 {
                     sampleRate = index > 0 ? __instance.AudioSystem.AudioInputs[index].SampleRate : __instance.AudioSystem.DefaultAudioInput.SampleRate;
                 }
@@ -49,7 +50,6 @@ public partial class Resonance : ResoniteMod
                     // We need to cast AudioInput to SDLRecordingDevice to get Format.spec.Freq and set sampleRate.
                     Resonance.Msg("AudioInput is actually SDLRecordingDevice on Linux. Casting and getting sample rate...");
 
-                    Type? audioInputType = __instance.AudioSystem.DefaultAudioInput.GetType();
                     var selectedInput = index > 0 ? __instance.AudioSystem.AudioInputs[index] : __instance.AudioSystem.DefaultAudioInput;
 
                     ValueTuple<SDL3.SDL.AudioSpec, int> sdlRecordingDevice_Format =
