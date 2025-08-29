@@ -33,14 +33,19 @@ public partial class Resonance : ResoniteMod
                 return;
 
 
-            __instance.RunSynchronously(() => {
+            __instance.RunSynchronously(() =>
+            {
                 int index = __instance.TargetDeviceIndex ?? -1;
-                
+
                 //44100;
                 int sampleRate;
 
                 // Check if we're using SDL. Either non-Windows platform or ForceSDLAudio launch argument
-                Type? audioInputType = __instance.AudioSystem.DefaultAudioInput.GetType();
+                // Filter out Steam Voice as a special case. Unless it's the only and Default option somehow.
+                Type? audioInputType = __instance.AudioSystem.AudioInputCount > 1 ?
+                        __instance.AudioSystem.AudioInputs.First(ain => ain.DeviceID != "SteamVoice").GetType() :
+                        __instance.AudioSystem.DefaultAudioInput.GetType();
+
                 if (audioInputType.Name != "SDLRecordingDevice")
                 {
                     sampleRate = index > 0 ? __instance.AudioSystem.AudioInputs[index].SampleRate : __instance.AudioSystem.DefaultAudioInput.SampleRate;
@@ -55,7 +60,7 @@ public partial class Resonance : ResoniteMod
                     ValueTuple<SDL3.SDL.AudioSpec, int> sdlRecordingDevice_Format =
                         (ValueTuple<SDL3.SDL.AudioSpec, int>)audioInputType.GetProperty("Format").GetValue(selectedInput);
 
-                    sampleRate =  sdlRecordingDevice_Format.Item1.Freq;
+                    sampleRate = sdlRecordingDevice_Format.Item1.Freq;
                 }
 
                 FFTStreamSettings settings =
@@ -72,7 +77,7 @@ public partial class Resonance : ResoniteMod
                         AutoGain,
                         Quantize_Bins
                     );
-                
+
 
                 FFTStreamHandler streamHandler = new(__instance, settings);
                 streamHandler.Setup();
@@ -84,7 +89,7 @@ public partial class Resonance : ResoniteMod
                 {
                     audioStream.BufferSize.Value = 12000;
                     audioStream.MinimumBufferDelay.Value = 0.05f;
-                } 
+                }
 
                 __instance.Destroyed += FFTStreamHandler.Destroy;
             });
@@ -97,7 +102,7 @@ public partial class Resonance : ResoniteMod
             var world = __instance.World;
             if (world.Focus != World.WorldFocus.Focused || __instance.LocalUser.IsSilenced || (ContactsDialog.RecordingVoiceMessage && ___lastDeviceIndex == __instance.AudioSystem.DefaultAudioInputIndex))
                 return;
-            
+
             if (FFTStreamHandler.FFTDict.TryGetValue(__instance, out FFTStreamHandler handler))
                 handler.UpdateFFTData(buffer);
         }

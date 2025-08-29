@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <Authors>Cyro</Authors>
     <Product>Resonance FFT</Product>
