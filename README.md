@@ -1,10 +1,12 @@
 # 🔊🎶 Resonance: Observably Auricular entertainment!
 
-Resonance is a mod for [Resonite](https://resonite.com) via [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) that lets you visualize your audio streams with FFT! ([Fast-Fourier Transform](https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft))
+Resonance is a mod for [Resonite](https://resonite.com) via [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) that lets you visualize your audio streams and video players with FFT! ([Fast-Fourier Transform](https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft))
+
+This fork adds support for video players. Any video you spawn will get the same FFT variables as your audio streams.
 
 ## How to use
 
-If you're just looking for some pretty visuals, simply install the DLL and favorite the custom streamer I've crafted. It will automatically utilize Resonance and display a colorful mirrored spectrum of whatever audio you decide to stream! If you're a bit more savvy and are looking for how to utilize Resonance in your own visualizers, continue to the supplementary information below.
+If you're just looking for some pretty visuals, simply install the DLL and favorite the custom streamer Cyro crafted. It will automatically utilize Resonance and display a colorful mirrored spectrum of whatever audio you decide to stream! If you're a bit more savvy and are looking for how to utilize Resonance in your own visualizers, continue to the supplementary information below.
 
 Custom audio stream link: `resrec:///U-Cyro/R-8DAFC317A0B346F7D152F1DE41D85EF7E774E239E1B6F196E340403D38267DC6`
 
@@ -12,9 +14,13 @@ Custom audio stream link: `resrec:///U-Cyro/R-8DAFC317A0B346F7D152F1DE41D85EF7E7
 
 **IMPORTANT**: Make sure that you stream your audio at full-volume in both hardware and software depending on what you're using! Otherwise the FFT will look small and quiet. Spotify's normalization can also throw off the amplitude of the graph as well, so it's recommended to have that disabled when streaming with Resonance.
 
+For videos, you can favorite my edit of eth0fox's custom video player that adds FrequencyLink support.
+
+My public folder: `resrec:///U-1iHTvyAEdSi/R-50B2CE5A53A54440A821734DB55882D1E5B5FEBC36B9B275CFF04C643E8B50B5`
+
 ## Supplementary Information
 
-Once installed, Resonance will automatically add some new variables to your audio streams. Those appear in the form of a new slot under newly-spawned audio streams called "Fft variable drivers", you can see it highlighted below.
+Once installed, Resonance will automatically add some new variables to your audio streams and video players. Those appear in the form of a new slot under newly-spawned audio streams and videos called "Fft variable drivers", you can see it highlighted below.
 
 <img src="image.png">
 
@@ -30,7 +36,7 @@ This will give you a reference to the ValueStream itself. As of right now, you c
 
 **DO NOTE HOWEVER** that the values of these bins have been modified significantly from the raw FFT data to look more visually appealing. If you were hoping to do any sort of scientific analysis or perform your own math to visualize the spectrum, you'll have to turn **off** normalization in your config. (If using [ResoniteModSettings](https://github.com/badhaloninja/ResoniteModSettings), enable the `showInternal` setting to show the normalization toggle)
 
-The math I've used to equalize the bin contribution accross the graph is as follows for each bin:
+The math Cyro used to equalize the bin contribution accross the graph is as follows for each bin:
 ```
 frequency = (float)binIndex * sampleRate / fftWidth
 gain = log10(frequency + 1)
