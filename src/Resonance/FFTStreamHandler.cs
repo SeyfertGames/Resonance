@@ -1,6 +1,6 @@
-using FrooxEngine;
 using Elements.Assets;
 using Elements.Core;
+using FrooxEngine;
 
 namespace Resonance;
 
@@ -10,8 +10,12 @@ public partial class FFTStreamHandler
     {
         FFTDict.Add(UserStream, this); // Associate the handler with a user audio stream
 
-        WorkingSpace = UserStream.Slot.FindSpace(null) ?? stream.Slot.AttachComponent<DynamicVariableSpace>();
-        VariableSlot = WorkingSpace.Slot.FindChildOrAdd("<color=hero.green>Fft variable drivers</color>", false);
+        WorkingSpace =
+            UserStream.Slot.FindSpace(null!) ?? stream.Slot.AttachComponent<DynamicVariableSpace>();
+        VariableSlot = WorkingSpace.Slot.FindChildOrAdd(
+            "<color=hero.green>Fft variable drivers</color>",
+            false
+        );
 
         SetupBins();
         SetupBands();
@@ -21,13 +25,12 @@ public partial class FFTStreamHandler
         VariableSlot.CreateVariable(NORMALIZED_VARIABLE, Settings.Normalized, false);
 
         // Generate logarithmic gain correction & frequency as a lookup so we don't need to calculate it all the time
-        freqLookup = Enumerable.Range(0, Settings.FftWidthCount)
-                    .Select(i => (float)i * settings.SamplingRate / Settings.FftWidthCount)
-                    .ToArray();
+        freqLookup = Enumerable
+            .Range(0, Settings.FftWidthCount)
+            .Select(i => (float)i * settings.SamplingRate / Settings.FftWidthCount)
+            .ToArray();
 
-        gainLookup = freqLookup
-                    .Select(freq => (float)Math.Log10(freq + 1f))
-                    .ToArray();
+        gainLookup = freqLookup.Select(freq => (float)Math.Log10(freq + 1f)).ToArray();
 
         Initialized = true;
     }
@@ -39,7 +42,6 @@ public partial class FFTStreamHandler
 
         foreach (var sample in samples)
             fftProvider.Add(sample[0], sample[1]);
-
 
         if (fftProvider.IsNewDataAvailable)
         {
@@ -58,30 +60,28 @@ public partial class FFTStreamHandler
                     float db = 10 * MathX.Log10(fftData[i] * fftData[i]);
 
                     // Normalize the decibels between zero and one assuming a static noise floor (usually 60db for most consumer music at full volume)
-                    float normalizedDb =
-                        MathX.Clamp
-                            ((db + Settings.DbNoiseFloor) / Settings.DbNoiseFloor,
-                            0f,
-                            1f);
+                    float normalizedDb = MathX.Clamp(
+                        (db + Settings.DbNoiseFloor) / Settings.DbNoiseFloor,
+                        0f,
+                        1f
+                    );
 
                     // Further narrow down the peaks by squaring the normalized value, then apply a logarithmic gain to equalize
                     // the contribution of higher frequencies across the spectrum. This helps the graph look pretty and well-balanced.
-                    float binValue = Settings.Normalized ?
-                        normalizedDb * normalizedDb * gainLookup![i] :
-                        fftData[i] * fftData[i];
-
+                    float binValue = Settings.Normalized
+                        ? normalizedDb * normalizedDb * gainLookup![i]
+                        : fftData[i] * fftData[i];
 
                     // *Do note, however, that this means the data is absolutely USELESS for any analytical purposes. Any visuals made
                     // for these values should mostly be intensity-based and not anything complex like beat detection or what have you.
 
-
                     // Lerp between the current bin value and the last to produce smoothing.
                     // This is actually how the volume meter component does it's smoothing.
-                    float smoothed = lastFftData[i] =
-                        MathX.LerpUnclamped
-                            (binValue,
-                            lastFftData[i],
-                            MathX.Clamp(Settings.Smoothing, 0f, 1f));
+                    float smoothed = lastFftData[i] = MathX.LerpUnclamped(
+                        binValue,
+                        lastFftData[i],
+                        MathX.Clamp(Settings.Smoothing, 0f, 1f)
+                    );
 
                     // If the smoothed value is greater than one, set the autoLevel to a factor
                     // that will correct it back down to one. Doing this for each bin will normalize
@@ -91,14 +91,15 @@ public partial class FFTStreamHandler
 
                     binStreams[i].Value = smoothed * AutoGain;
                     binStreams[i].ForceUpdate(); // Force update the stream to push the value
-
                 }
 
                 // Average & populate the 7 frequency bands
-                if (bandIndex < BAND_RANGES.Length &&
-                    freqLookup![i] >= BAND_RANGES[bandIndex] &&
-                    bandStreams[bandIndex] != null &&
-                    !bandStreams[bandIndex].IsDestroyed)
+                if (
+                    bandIndex < BAND_RANGES.Length
+                    && freqLookup![i] >= BAND_RANGES[bandIndex]
+                    && bandStreams[bandIndex] != null
+                    && !bandStreams[bandIndex].IsDestroyed
+                )
                 {
                     bandStreams[bandIndex].Value = average / samplesAdded;
                     bandStreams[bandIndex].ForceUpdate();
@@ -113,7 +114,6 @@ public partial class FFTStreamHandler
 
             // Slowly return autolevel back to one
             autoGainFactor = MathX.LerpUnclamped(autoGainFactor, 1f, Settings.AutoGain_Speed);
-
         }
     }
 
@@ -146,8 +146,14 @@ public partial class FFTStreamHandler
         {
             string varName = $"fft_stream_bin_{i}";
             var binName = $"{UserStream.ReferenceID}.bin.{i}";
-            binStreams[i] = localUser.GetStreamOrAdd<ValueStream<float>>(binName, (s) => SetStreamParams(s, binName));
-            if (WorkingSpace?.TryReadValue(varName, out IValue<float> stream) ?? false && stream != null)
+            binStreams[i] = localUser.GetStreamOrAdd<ValueStream<float>>(
+                binName,
+                (s) => SetStreamParams(s, binName)
+            );
+            if (
+                WorkingSpace?.TryReadValue(varName, out IValue<float> stream)
+                ?? false && stream != null
+            )
             {
                 WorkingSpace.TryWriteValue(varName, binStreams[i]);
                 continue;
@@ -163,8 +169,14 @@ public partial class FFTStreamHandler
         {
             string varName = $"fft_stream_band_{i}";
             var bandName = $"{UserStream.ReferenceID}.band.{i}";
-            bandStreams[i] = localUser.GetStreamOrAdd<ValueStream<float>>(bandName, (s) => SetBandStreamParams(s, bandName));
-            if (WorkingSpace?.TryReadValue(varName, out IValue<float> stream) ?? false && stream != null)
+            bandStreams[i] = localUser.GetStreamOrAdd<ValueStream<float>>(
+                bandName,
+                (s) => SetBandStreamParams(s, bandName)
+            );
+            if (
+                WorkingSpace?.TryReadValue(varName, out IValue<float> stream)
+                ?? false && stream != null
+            )
             {
                 WorkingSpace.TryWriteValue(varName, bandStreams[i]);
                 continue;
@@ -207,6 +219,7 @@ public partial class FFTStreamHandler
             stream.Destroy();
         }
     }
+
     private void DestroyBands()
     {
         foreach (var stream in bandStreams)
@@ -225,7 +238,7 @@ public partial class FFTStreamHandler
 
     public static void Destroy(UserAudioStream<StereoSample>? stream)
     {
-        if (stream != null && FFTDict.TryGetValue(stream, out FFTStreamHandler handler))
+        if (stream != null && FFTDict.TryGetValue(stream, out FFTStreamHandler? handler))
         {
             handler.Destroy();
         }
@@ -255,10 +268,14 @@ public partial class FFTStreamHandler
 [Serializable]
 public class FFTStreamNotInitializedException : Exception
 {
-    public FFTStreamNotInitializedException() : base("Stream settings handler is not initialized! Did you run Setup() after creating the FFTStreamHandler?") { }
-    public FFTStreamNotInitializedException(string message) : base(message) { }
-    public FFTStreamNotInitializedException(string message, Exception inner) : base(message, inner) { }
-    protected FFTStreamNotInitializedException(
-        System.Runtime.Serialization.SerializationInfo info,
-        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    public FFTStreamNotInitializedException()
+        : base(
+            "Stream settings handler is not initialized! Did you run Setup() after creating the FFTStreamHandler?"
+        ) { }
+
+    public FFTStreamNotInitializedException(string message)
+        : base(message) { }
+
+    public FFTStreamNotInitializedException(string message, Exception inner)
+        : base(message, inner) { }
 }

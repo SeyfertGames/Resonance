@@ -1,0 +1,103 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Cyro</Authors>
+    <Company>Cyro</Company>
+    <Copyright>Copyright (c) 2023 Cyro</Copyright>
+    <Description>Realtime networked FFT support for Resonite</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Resonite;Mod;ResoniteModLoader</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/SeyfertGames/Resonance</RepositoryUrl>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <AssemblyName Condition="'$(AssemblyName)'==''">Resonance</AssemblyName>
+    <AssemblyTitle Condition="'$(AssemblyTitle)'==''">Resonance</AssemblyTitle>
+    <Product Condition="'$(Product)'==''">$(AssemblyName)</Product>
+    <RootNamespace Condition="'$(RootNamespace)'==''">$(AssemblyName)</RootNamespace>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CopyToMods Condition="'$(CopyToMods)'==''">false</CopyToMods>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ResonitePath)'==''">
+    <ResonitePath>$(MSBuildThisFileDirectory)Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')"
+      >C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath
+    >
+    <ResonitePath Condition="Exists('C:\Program Files\Steam\steamapps\common\Resonite\')"
+      >C:\Program Files\Steam\steamapps\common\Resonite\</ResonitePath
+    >
+    <ResonitePath Condition="Exists('$(USERPROFILE)\.steam\steam\steamapps\common\Resonite\')"
+      >$(USERPROFILE)\.steam\steam\steamapps\common\Resonite\</ResonitePath
+    >
+    <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')"
+      >$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath
+    >
+    <ResonitePath Condition="Exists('$(HOME)/.local/share/Steam/steamapps/common/Resonite/')"
+      >$(HOME)/.local/share/Steam/steamapps/common/Resonite/</ResonitePath
+    >
+    <ResonitePath Condition="Exists('/mnt/c/Program Files (x86)/Steam/steamapps/common/Resonite/')"
+      >/mnt/c/Program Files (x86)/Steam/steamapps/common/Resonite/</ResonitePath
+    >
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ResolvedResonitePath>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(ResonitePath)'))))</ResolvedResonitePath>
+    <ResoniteLibrariesDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'Libraries'))</ResoniteLibrariesDir>
+    <ResoniteLibsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_libs'))</ResoniteLibsDir>
+    <ResoniteModsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_mods'))</ResoniteModsDir>
+    <FrooxEnginePresent Condition="Exists('$(ResolvedResonitePath)FrooxEngine.dll')"
+      >true</FrooxEnginePresent
+    >
+    <FrooxEnginePresent Condition="'$(FrooxEnginePresent)'==''">false</FrooxEnginePresent>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FrooxEnginePresent)'=='true'">
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(ResoniteLibrariesDir)\ResoniteModLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="HarmonyLib">
+      <HintPath>$(ResoniteLibsDir)\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="FrooxEngine">
+      <HintPath>$(ResolvedResonitePath)FrooxEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Elements.Core">
+      <HintPath>$(ResolvedResonitePath)Elements.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Elements.Assets">
+      <HintPath>$(ResolvedResonitePath)Elements.Assets.dll</HintPath>
+    </Reference>
+    <Reference Include="CSCore">
+      <HintPath>$(ResolvedResonitePath)CSCore.dll</HintPath>
+    </Reference>
+    <Reference Include="SDL3">
+      <HintPath>$(ResolvedResonitePath)SDL3-CS.dll</HintPath>
+    </Reference>
+    <Reference Include="Awwdio">
+      <HintPath>$(ResolvedResonitePath)Awwdio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(FrooxEnginePresent)'!='true'">
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\ResoniteModLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="HarmonyLib">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\0Harmony.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

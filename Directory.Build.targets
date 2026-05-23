@@ -1,0 +1,26 @@
+<Project>
+  <Target Name="EnsureResoniteReferences" BeforeTargets="ResolveReferences">
+    <Error
+      Condition="'$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\ResoniteModLoader.dll')"
+      Text="Cannot resolve Resonite references. Install Resonite locally or place fallback assemblies under $(MSBuildThisFileDirectory)Resonite\."
+    />
+    <Error
+      Condition="'$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\0Harmony.dll')"
+      Text="Cannot resolve 0Harmony.dll for fallback builds. Place it under $(MSBuildThisFileDirectory)Resonite\."
+    />
+  </Target>
+
+  <Target
+    Name="CopyModToResonite"
+    AfterTargets="Build"
+    Condition="'$(CopyToMods)'=='true' and '$(IsTestProject)'!='true'"
+  >
+    <MakeDir Directories="$(ResoniteModsDir)" />
+    <Copy
+      SourceFiles="$(TargetPath)"
+      DestinationFolder="$(ResoniteModsDir)"
+      SkipUnchangedFiles="true"
+      ContinueOnError="WarnAndContinue"
+    />
+  </Target>
+</Project>
