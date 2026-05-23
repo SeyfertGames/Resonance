@@ -11,7 +11,7 @@ public partial class Resonance : ResoniteMod
     public override string Name =>
         "<color=hero.cyan>🔊</color><color=hero.purple>🎶</color> Resonance";
 
-    public override string Author => "Cyro";
+    public override string Author => "Cyro & PointerOffset & Seyfert";
 
     public override string Version =>
         typeof(Resonance)
@@ -27,7 +27,7 @@ public partial class Resonance : ResoniteMod
     {
         Config = GetConfiguration();
         Config!.Save(true);
-        Harmony harmony = new("net.Cyro.Resonance");
+        Harmony harmony = new("net.Seyfert.Resonance");
         harmony.PatchAll();
 
         var readMethod = typeof(VideoTextureProvider)

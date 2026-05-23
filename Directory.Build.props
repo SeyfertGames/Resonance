@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Authors>Cyro</Authors>
-    <Company>Cyro</Company>
+    <Authors>Cyro &amp; PointerOffset &amp; Seyfert</Authors>
     <Copyright>Copyright (c) 2023 Cyro</Copyright>
     <Description>Realtime networked FFT support for Resonite</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
