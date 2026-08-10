@@ -7,6 +7,20 @@
         "requested": "[7.0.0, )",
         "resolved": "7.0.0",
         "contentHash": "2lMTCQl5bGP4iv0JNkockPnyllC6eHLz+CoK2ICvalvHod+exXSxueu9hq+zNkU7bZBJf8wMfeRC/Edn8AGmEg=="
+      },
+      "ResoniteModLoader": {
+        "type": "Direct",
+        "requested": "[5.0.1, )",
+        "resolved": "5.0.1",
+        "contentHash": "93b3UzjcZzD4QHO3x9LpXEtGAiI5P/ib4zcxUz+f7pYhJO7Fxi09sRLDKPUhJNhNPGVLEEdp7uv4867JtuqBiQ==",
+        "dependencies": {
+          "Lib.Harmony": "2.4.2"
+        }
+      },
+      "Lib.Harmony": {
+        "type": "Transitive",
+        "resolved": "2.4.2",
+        "contentHash": "D2X9ojVjqbqdqWVK3VQETrEb56yVoXxtEp6tP5UvW0PP+bA4uJiswqOxF8GhH02ECwyevUa9vwhwdLzyXfksbw=="
       }
     }
   }

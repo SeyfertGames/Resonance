@@ -2,8 +2,8 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="MinVer" Version="7.0.0" />
+    <PackageVersion Include="ResoniteModLoader" Version="5.0.1" />
   </ItemGroup>
 </Project>

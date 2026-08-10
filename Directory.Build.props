@@ -56,8 +56,6 @@
   <PropertyGroup>
     <ResolvedResonitePath>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(ResonitePath)'))))</ResolvedResonitePath>
     <ResoniteLibrariesDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'Libraries'))</ResoniteLibrariesDir>
-    <ResoniteLibsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_libs'))</ResoniteLibsDir>
-    <ResoniteModsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_mods'))</ResoniteModsDir>
     <FrooxEnginePresent Condition="Exists('$(ResolvedResonitePath)FrooxEngine.dll')"
       >true</FrooxEnginePresent
     >
@@ -65,12 +63,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(FrooxEnginePresent)'=='true'">
-    <Reference Include="ResoniteModLoader">
-      <HintPath>$(ResoniteLibrariesDir)\ResoniteModLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="HarmonyLib">
-      <HintPath>$(ResoniteLibsDir)\0Harmony.dll</HintPath>
-    </Reference>
     <Reference Include="FrooxEngine">
       <HintPath>$(ResolvedResonitePath)FrooxEngine.dll</HintPath>
     </Reference>
